@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.DishMapper">
+    <resultMap id="dishVOResultMap" type="com.sky.vo.DishVO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="categoryId" property="categoryId"/>
+        <result column="price" property="price"/>
+        <result column="image" property="image"/>
+        <result column="description" property="description"/>
+        <result column="status" property="status"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="categoryName" property="categoryName"/>
+
+        <!-- 关联 dish_flavor -->
+        <collection property="flavors" ofType="com.sky.entity.DishFlavor">
+            <id column="flavor_id" property="id"/>
+            <result column="dish_id" property="dishId"/>
+            <result column="flavor_name" property="name"/>
+            <result column="flavor_value" property="value"/>
+        </collection>
+    </resultMap>
+
+    <delete id="deleteBatch">
+        delete from dish where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <select id="pageQuery" resultMap="dishVOResultMap">
+        select d.*, c.name as categoryName,
+               df.id as flavor_id, df.dish_id as dish_id, df.name as flavor_name, df.value as flavor_value
+        from dish d left join category c on d.category_id = c.id left join dish_flavor df on d.id = df.dish_id
+        <where>
+            <if test="name != null and name != ''">
+                AND d.name like concat('%',#{name},'%')
+            </if>
+            <if test="categoryId != null">
+                AND d.category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                AND d.status = #{status}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="getByIds" resultType="com.sky.entity.Dish">
+        select * from dish where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+</mapper>

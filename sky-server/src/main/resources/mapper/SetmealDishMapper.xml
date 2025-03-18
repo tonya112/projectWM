@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.SetmealDishMapper">
+    <resultMap id="SetmealDishResultMap" type="com.sky.dto.DishMapSetmealDTO">
+        <id column="dish_id" property="dishId"/>
+
+        <collection property="setmealIds" ofType="Long">
+            <result column="setmeal_id"/>
+        </collection>
+    </resultMap>
+
+
+    <select id="getSetmealIdsByDishIds" resultMap="SetmealDishResultMap">
+        SELECT dish_id, setmeal_id
+        FROM setmeal_dish
+        WHERE dish_id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+
+
+</mapper>
