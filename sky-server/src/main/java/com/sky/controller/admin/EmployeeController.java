@@ -115,11 +115,8 @@ public class EmployeeController {
     @PutMapping("")
     public Result update(@RequestBody EmployeeDTO employeeDTO){
         log.info("编辑员工：{}",employeeDTO);
-        Employee employee = new Employee();
-        BeanUtils.copyProperties(employeeDTO,employee);
-        employee.setUpdateUser(BaseContext.getCurrentId());
-        employee.setUpdateTime(LocalDateTime.now());
-        employeeService.update(employee);
+
+        employeeService.update(employeeDTO);
         return Result.success();
     }
 
