@@ -21,4 +21,6 @@ public interface CategoryService {
     List<Category> getByType(Integer type);
 
     void startOrStop(Integer status, Long id);
+
+    List<Category> list(Integer type);
 }

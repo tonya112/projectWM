@@ -89,4 +89,44 @@
         select d.*, df.id as flavor_id, df.dish_id as dish_id, c.name as category_name,df.name as flavor_name, df.value as flavor_value from dish d left join dish_flavor df on d.id = df.dish_id left join category c on d.category_id = c.id
                  where d.id = #{id}
     </select>
+
+    <select id="list" resultType="com.sky.entity.Dish">
+        select * from dish
+        <where>
+            <if test="id != null">
+                AND id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                AND name like concat('%',#{name},'%')
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="categoryId != null">
+                AND category_id = #{categoryId}
+            </if>
+            <if test="price != null">
+                AND price = #{price}
+            </if>
+            <if test="description != null and description != ''">
+                AND description like concat('%',#{description},'%')
+            </if>
+            <if test="image != null and image != ''">
+                AND image like concat('%',#{image},'%')
+            </if>
+            <if test="createTime != null">
+                AND create_time = #{createTime}
+            </if>
+            <if test="updateTime != null">
+                AND update_time = #{updateTime}
+            </if>
+            <if test="createUser != null">
+                AND create_user = #{createUser}
+            </if>
+            <if test="updateUser != null">
+                AND update_user = #{updateUser}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
 </mapper>
