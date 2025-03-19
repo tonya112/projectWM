@@ -145,6 +145,12 @@ public class DishServiceImpl implements DishService{
         dishMapper.update(newDish);
     }
 
+    @Override
+    public List<Dish> getByCategoryId(Long categoryId) {
+        List<Dish> dishList = dishMapper.getByCategoryId(categoryId);
+        return dishList;
+    }
+
     @Transactional
     public void deleteDishAndFlavor(List<Long> ids){
         dishMapper.deleteBatch(ids);

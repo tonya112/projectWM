@@ -10,6 +10,47 @@
         </collection>
     </resultMap>
 
+    <resultMap id="SetmealResultVOMap" type="com.sky.vo.SetmealVO">
+        <id column="id" property="id"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="name" property="name"/>
+        <result column="price" property="price"/>
+        <result column="status" property="status"/>
+        <result column="description" property="description"/>
+        <result column="image" property="image"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="category_name" property="categoryName"/>
+        <collection property="setmealDishes" ofType="com.sky.entity.SetmealDish">
+                <id column="sd_id" property="id"/>
+                <result column="sd_dish_id" property="dishId"/>
+                <result column="sd_name" property="name"/>
+                <result column="sd_price" property="price"/>
+                <result column="sd_copies" property="copies"/>
+                <result column="sd_setmealId" property="setmealId"/>
+        </collection>
+    </resultMap>
+
+    <insert id="insertBatch">
+        INSERT INTO setmeal_dish (dish_id, setmeal_id , name, price, copies)
+        VALUES
+        <foreach collection="setmealDishes" item="setmealDish" separator=",">
+            (#{setmealDish.dishId}, #{setmealDish.setmealId}, #{setmealDish.name}, #{setmealDish.price}, #{setmealDish.copies})
+        </foreach>
+    </insert>
+
+    <delete id="deleteBySetmealId">
+        DELETE FROM setmeal_dish
+        WHERE setmeal_id = #{id}
+    </delete>
+
+    <delete id="deleteBySetmealIds">
+        DELETE FROM setmeal_dish
+        WHERE setmeal_id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
 
     <select id="getSetmealIdsByDishIds" resultMap="SetmealDishResultMap">
         SELECT dish_id, setmeal_id
@@ -20,6 +61,17 @@
         </foreach>
     </select>
 
+    <select id="getByIdWithDishes" resultMap="SetmealResultVOMap">
+        SELECT s.*, c.name AS categoryName, sd.id AS sd_id, sd.dish_id AS sd_dish_id, sd.name AS sd_name, sd.price AS sd_price, sd.copies AS sd_copies, sd.setmeal_id AS sd_setmealId
+        FROM setmeal s
+        LEFT JOIN category c ON s.category_id = c.id
+        LEFT JOIN setmeal_dish sd ON s.id = sd.setmeal_id
+        WHERE s.id = #{id}
+    </select>
+
+    <select id="getDishBySetmealId" resultType="com.sky.entity.SetmealDish">
+        SELECT * FROM setmeal_dish WHERE setmeal_id = #{id}
+    </select>
 
 
 </mapper>

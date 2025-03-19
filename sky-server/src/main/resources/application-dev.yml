@@ -12,3 +12,8 @@ sky:
     access-key-id: LTAI5tByNitN3CLNcfssvdHe
     access-key-secret: cFWJc1mDL7U4SlfymxC62xhpWTJ3mg
     bucket-name: storage-wm
+
+  redis:
+    host: 192.168.50.128
+    port: 6379
+    database: 10
