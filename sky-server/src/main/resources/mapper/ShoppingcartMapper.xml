@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.ShoppingcartMapper">
+    <insert id="insert">
+        insert into shopping_cart
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="image != null">
+                image,
+            </if>
+            <if test="dishId != null">
+                dish_id,
+            </if>
+            <if test="setmealId != null">
+                setmeal_id,
+            </if>
+            <if test="dishFlavor != null">
+                dish_flavor,
+            </if>
+            <if test="number != null">
+                number,
+            </if>
+            <if test="amount != null">
+                amount,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="name != null">
+                #{name},
+            </if>
+            <if test="image != null">
+                #{image},
+            </if>
+            <if test="dishId != null">
+                #{dishId},
+            </if>
+            <if test="setmealId != null">
+                #{setmealId},
+            </if>
+            <if test="dishFlavor != null">
+                #{dishFlavor},
+            </if>
+            <if test="number != null">
+                #{number},
+            </if>
+            <if test="amount != null">
+                #{amount},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+        </trim>
+    </insert>
+    <update id="update">
+        update shopping_cart
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="image != null">
+                image = #{image},
+            </if>
+            <if test="dishFlavor != null">
+                dish_flavor = #{dishFlavor},
+            </if>
+            <if test="number != null">
+                number = #{number},
+            </if>
+            <if test="amount != null">
+                amount = #{amount},
+            </if>
+        </set>
+        <where>
+            <if test="userId != null">
+                user_id = #{userId}
+            </if>
+            <if test="dishId != null">
+                and dish_id = #{dishId}
+            </if>
+            <if test="setmealId != null">
+                and setmeal_id = #{setmealId}
+            </if>
+        </where>
+    </update>
+    <delete id="deleteByUserIdAndItemId">
+        delete from shopping_cart
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="dishId != null">
+                and dish_id = #{dishId}
+            </if>
+            <if test="setmealId != null">
+                and setmeal_id = #{setmealId}
+            </if>
+        </where>
+    </delete>
+
+    <delete id="cleanAllByUserId">
+        delete from shopping_cart
+        <where>
+            user_id = #{userId}
+        </where>
+    </delete>
+
+    <select id="getByUserIdAndItemId" resultType="com.sky.entity.ShoppingCart">
+        select * from shopping_cart
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="dishId != null">
+                and dish_id = #{dishId}
+            </if>
+            <if test="setmealId != null">
+                and setmeal_id = #{setmealId}
+            </if>
+            <if test="dishFlavor != null">
+                and dish_flavor = #{dishFlavor}
+            </if>
+        </where>
+    </select>
+    <select id="getShoppingCartlistByUserId" resultType="com.sky.entity.ShoppingCart">
+        select * from shopping_cart
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="fillShopingCartItemContent" resultType="com.sky.entity.ShoppingCart">
+        select image, ds.name, price as amount, image from
+        <if test="dishId != null">
+            dish as ds
+        </if>
+        <if test="setmealId != null">
+            setmeal as ds
+        </if>
+        left join category on category.id = ds.category_id
+        where
+            <if test="dishId != null">
+                ds.id = #{dishId}
+            </if>
+            <if test="setmealId != null">
+                ds.id = #{setmealId}
+            </if>
+    </select>
+</mapper>
