@@ -79,4 +79,6 @@ public class DishController {
         List<Dish> dishList = dishService.getByCategoryId(categoryId);
         return Result.success(dishList);
     }
+
+
 }

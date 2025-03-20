@@ -22,5 +22,4 @@ public interface CategoryService {
 
     void startOrStop(Integer status, Long id);
 
-    List<Category> list(Integer type);
 }
