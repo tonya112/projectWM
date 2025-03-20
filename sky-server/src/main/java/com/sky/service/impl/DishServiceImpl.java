@@ -14,6 +14,7 @@ import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
+import com.sky.result.Result;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
 import lombok.extern.slf4j.Slf4j;
@@ -190,6 +191,18 @@ public class DishServiceImpl implements DishService{
      * @return
      */
     public List<DishVO> listWithFlavor(Dish dish) {
+
+        Long categoryId = dish.getCategoryId();
+        //构造redis中的key
+        String key = "dish_" + categoryId;
+        //查询redis中是否存在菜品数据
+
+        List<DishVO> list = (List<DishVO>) redisTemplate.opsForValue().get(key);
+        if (list != null && !list.isEmpty()) {
+            //如果存在，直接返回
+            return list;
+        }
+
         List<Dish> dishList = dishMapper.list(dish);
 
         List<DishVO> dishVOList = new ArrayList<>();
@@ -204,6 +217,8 @@ public class DishServiceImpl implements DishService{
             dishVO.setFlavors(flavors);
             dishVOList.add(dishVO);
         }
+
+        redisTemplate.opsForValue().set(key, dishVOList);
 
         return dishVOList;
     }

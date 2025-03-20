@@ -21,6 +21,8 @@ import com.sky.vo.DishItemVO;
 import com.sky.vo.SetmealVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +48,7 @@ public class SetmealServiceImpl implements SetmealService {
 
     @Override
     @Transactional
+    @CacheEvict(cacheNames = "setmealCache", key = "#setmealDTO.categoryId")
     public void saveWithDish(SetmealDTO setmealDTO) {
         //添加setmeal
         Setmeal newSetmeal = new Setmeal();
@@ -82,6 +85,7 @@ public class SetmealServiceImpl implements SetmealService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "setmealCache", allEntries = true)
     public void update(SetmealDTO setmealDTO) {
         //更新setmeal
         Setmeal newSetmeal = new Setmeal();
@@ -102,6 +106,7 @@ public class SetmealServiceImpl implements SetmealService {
     }
 
     @Override
+    @CacheEvict(cacheNames = "setmealCache", allEntries = true)
     public void startOrStop(Integer status, Long id) {
         //检查套餐是否起售
         if(status == ENABLE){
@@ -137,6 +142,7 @@ public class SetmealServiceImpl implements SetmealService {
 
     @Transactional
     @Override
+    @CacheEvict(cacheNames = "setmealCache", allEntries = true)
     public void deleteBatch(List<Long> ids) {
         //检查套餐是否起售
         List<Setmeal> setmeals = setmealMapper.getByIds(ids);
@@ -164,6 +170,8 @@ public class SetmealServiceImpl implements SetmealService {
      * @param setmeal
      * @return
      */
+    @Override
+    @Cacheable(cacheNames = "setmealCache", key = "#setmeal.categoryId")
     public List<Setmeal> list(Setmeal setmeal) {
         List<Setmeal> list = setmealMapper.list(setmeal);
         return list;
