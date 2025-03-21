@@ -15,7 +15,7 @@ public interface ShoppingcartMapper {
 
     void update(ShoppingCart cartItem);
 
-    List<ShoppingCart> getShoppingCartlistByUserId(Long userId);
+    List<ShoppingCart> getShoppingCartlistByUserId(ShoppingCart shoppingCart);
 
     void deleteByUserIdAndItemId(ShoppingCart shoppingCart);
 

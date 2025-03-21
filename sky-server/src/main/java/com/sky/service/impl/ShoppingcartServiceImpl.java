@@ -60,7 +60,8 @@ public class ShoppingcartServiceImpl implements ShoppingcartService {
     public List<ShoppingCart> list() {
         //获取当前用户id
         Long userId = BaseContext.getCurrentId();
-        List<ShoppingCart> list = shoppingcartMapper.getShoppingCartlistByUserId(userId);
+        ShoppingCart shoppingCart = ShoppingCart.builder().userId(userId).build();
+        List<ShoppingCart> list = shoppingcartMapper.getShoppingCartlistByUserId(shoppingCart);
         log.info("购物车物品： {}", list);
         return list;
     }
