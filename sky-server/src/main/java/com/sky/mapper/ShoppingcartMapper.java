@@ -22,4 +22,6 @@ public interface ShoppingcartMapper {
     void cleanAllByUserId(Long userId);
 
     ShoppingCart fillShopingCartItemContent(ShoppingCart shoppingCart);
+
+    void insertBatch(List<ShoppingCart> shoppingCartListValid);
 }
