@@ -454,6 +454,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void reminder(Long id) {
+        //查询订单
+        Orders orders = orderMapper.getById(id);
+        if(orders == null){
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
         //通过websocket给客户端发送消息
         Map map = new HashMap();
         map.put("type",2);
