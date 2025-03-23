@@ -1,20 +1,25 @@
 package com.sky.service.impl;
 
+import com.alibaba.druid.sql.visitor.functions.Locate;
 import com.sky.dto.GoodsSalesDTO;
 import com.sky.entity.OrderDetail;
 import com.sky.entity.Orders;
 import com.sky.mapper.OrderDetailMapper;
 import com.sky.mapper.ReportMapper;
 import com.sky.service.ReportService;
-import com.sky.vo.OrderReportVO;
-import com.sky.vo.SalesTop10ReportVO;
-import com.sky.vo.TurnoverReportVO;
-import com.sky.vo.UserReportVO;
+import com.sky.service.WorkspaceService;
+import com.sky.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.formula.functions.T;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -32,7 +37,7 @@ public class ReportServiceImpl implements ReportService {
     private ReportMapper reportMapper;
 
     @Autowired
-    private OrderDetailMapper orderDetailMapper;
+    private WorkspaceService workspaceService;
 
 
     @Override
@@ -150,6 +155,71 @@ public class ReportServiceImpl implements ReportService {
                 .numberList(numberList)
                 .build();
         return salesTop10ReportVO;
+    }
+
+    @Override
+    public void exportBusinessReport(HttpServletResponse response) {
+        //查询数据库获取营业数据
+        LocalDate beginDate = LocalDate.now().minusDays(30);
+        LocalDate endDate = LocalDate.now().minusDays(1);
+        BusinessDataVO businessData = workspaceService.getBusinessData(LocalDateTime.of(beginDate, LocalTime.MIN), LocalDateTime.of(endDate, LocalTime.MAX));
+
+        //把数据写入excel
+        //基于模板文件创建新的excel文件
+        InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream("template/运营数据报表模板.xlsx");
+        try {
+            XSSFWorkbook workbook = new XSSFWorkbook(resourceAsStream);
+
+            //填充数据
+
+            //填充时间数据
+            String dateStr = "日期" + beginDate + "至" + endDate;
+            workbook.getSheet("Sheet1").getRow(2).getCell(1).setCellValue(dateStr);
+
+            //填充
+            XSSFRow row = workbook.getSheet("Sheet1").getRow(3);
+            //营业额
+            row.getCell(2).setCellValue(businessData.getTurnover());
+            //订单完成率
+            row.getCell(4).setCellValue(businessData.getOrderCompletionRate());
+            //新增用户数
+            row.getCell(6).setCellValue(businessData.getNewUsers());
+
+            //
+            row = workbook.getSheet("Sheet1").getRow(4);
+            //有效订单数
+            row.getCell(2).setCellValue(businessData.getValidOrderCount());
+            //平均客单价
+            row.getCell(4).setCellValue(businessData.getUnitPrice());
+
+            //填充明细
+            for(int i = 0;i < 30; i++){
+                LocalDate date = beginDate.plusDays(i);
+                BusinessDataVO dailyBusinessData = workspaceService.getBusinessData(LocalDateTime.of(date, LocalTime.MIN), LocalDateTime.of(date, LocalTime.MAX));
+                row = workbook.getSheet("Sheet1").getRow(7 + i);
+                row.getCell(1).setCellValue(date.toString());
+                row.getCell(2).setCellValue(dailyBusinessData.getTurnover());
+                row.getCell(3).setCellValue(dailyBusinessData.getValidOrderCount());
+                row.getCell(4).setCellValue(dailyBusinessData.getOrderCompletionRate());
+                row.getCell(5).setCellValue(dailyBusinessData.getUnitPrice());
+                row.getCell(6).setCellValue(dailyBusinessData.getNewUsers());
+            }
+
+            //通过输出流下载excel到客户端浏览器
+            ServletOutputStream outputStream = response.getOutputStream();
+            workbook.write(outputStream);
+
+            outputStream.close();
+            workbook.close();
+
+
+
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
     }
 
     private static List<LocalDate> getLocalDates(LocalDate begin, LocalDate end) {

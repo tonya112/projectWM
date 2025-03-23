@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Update;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface OrderMapper {
@@ -50,4 +51,8 @@ public interface OrderMapper {
     List<Orders> getByStatus(Integer deliveryInProgress);
 
     void autoCompleteDeliveryOrder(Integer completed, Integer accessWord, LocalDateTime deliveryTime, List<Long> ids);
+
+    Integer countByMap(Map map);
+
+    Double sumByMap(Map map);
 }

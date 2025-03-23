@@ -9,4 +9,18 @@
     <select id="getByOpenid" resultType="com.sky.entity.User">
         SELECT * FROM user WHERE openid = #{openid}
     </select>
+    <select id="countByMap" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM user
+        <where>
+            <if test="begin != null and end != null">
+                and create_time between #{begin} and #{end}
+            </if>
+            <if test="begin != null and end == null">
+                and create_time &gt;= #{begin}
+            </if>
+            <if test="begin == null and end != null">
+                and create_time &lt;= #{end}
+            </if>
+        </where>
+    </select>
 </mapper>
