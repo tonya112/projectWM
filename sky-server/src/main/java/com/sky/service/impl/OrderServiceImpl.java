@@ -463,7 +463,7 @@ public class OrderServiceImpl implements OrderService {
         Map map = new HashMap();
         map.put("type",2);
         map.put("orderId", id);
-        map.put("content","用户催单");
+        map.put("content","用户催单：订单号：" + orders.getNumber());
         String jsonString = JSON.toJSONString(map);
         webSocketServer.sendToAllClient(jsonString);
     }

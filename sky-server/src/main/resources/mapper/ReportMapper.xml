@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.ReportMapper">
+
+    <select id="getTurnoverByDate" parameterType="Map" resultType="java.lang.Double">
+        select sum(amount) from orders
+        <where>
+            <if test="date != null">
+                and DATE(order_time) = #{date}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+
+    </select>
+    <select id="getNewUserByDate" resultType="java.lang.Integer">
+        select count(id) from user
+        <where>
+            <if test="date != null">
+                and DATE(create_time) = #{date}
+            </if>
+        </where>
+    </select>
+    <select id="getTotalUserByDate" resultType="java.lang.Integer">
+        select count(id) from user
+        <where>
+            <if test="date != null">
+                and DATE(create_time) &lt;= #{date}
+            </if>
+        </where>
+    </select>
+    <select id="getOrderCountByMap" resultType="java.lang.Integer">
+        select count(id) from orders
+        <where>
+            <if test="date != null">
+                and DATE(order_time) = #{date}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+    <select id="getOrderIdByDate" resultType="java.lang.Integer">
+        select id from orders
+        <where>
+            <if test="begin != null and end != null">
+                and DATE(order_time) between #{begin} and #{end}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+    <select id="getOrderDetailByOrderId" resultType="com.sky.entity.OrderDetail">
+        select * from order_detail
+        <where>
+            <if test="orderIdByDate != null and orderIdByDate.size() > 0">
+                and order_id in
+                <foreach collection="orderIdByDate" item="id" open="(" close=")" separator=",">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </select>
+    <select id="getGoodsSales" resultType="com.sky.dto.GoodsSalesDTO">
+        select od.name as name, sum(od.number) as number from order_detail od
+        join orders o on od.order_id = o.id
+        <where>
+            <if test="begin != null">
+                and DATE(o.order_time) &gt;= #{begin}
+            </if>
+            <if test="end != null">
+                and DATE(o.order_time) &lt;= #{end}
+            </if>
+            and o.status = 5
+        </where>
+        group by name
+        order by number desc
+        limit 10
+    </select>
+</mapper>
