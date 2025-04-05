@@ -9,8 +9,8 @@ sky:
 
   alioss:
     endpoint: oss-cn-beijing.aliyuncs.com
-    access-key-id: LTAI5tByNitN3CLNcfssvdHe
-    access-key-secret: cFWJc1mDL7U4SlfymxC62xhpWTJ3mg
+    access-key-id: 
+    access-key-secret: 
     bucket-name: storage-wm
 
   redis:
