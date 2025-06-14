@@ -57,6 +57,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         //密码比对
         //md5加密，然后再进行比对
         String passwordMD5 = DigestUtils.md5DigestAsHex(password.getBytes());
+        System.out.println(passwordMD5);
+
+
         if (!passwordMD5.equals(employee.getPassword())) {
             //密码错误
             throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
@@ -66,7 +69,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             //账号被锁定
             throw new AccountLockedException(MessageConstant.ACCOUNT_LOCKED);
         }
-
+        System.out.println(employee);
         //3、返回实体对象
         return employee;
     }
@@ -119,7 +122,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void update(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
-        //BeanUtils.copyProperties(employeeDTO,employee);
+        BeanUtils.copyProperties(employeeDTO,employee);
         //employee.setUpdateUser(BaseContext.getCurrentId());
         //employee.setUpdateTime(LocalDateTime.now());
         employeeMapper.update(employee);

@@ -14,7 +14,7 @@ sky:
     bucket-name: storage-wm
 
   redis:
-    host: 192.168.50.128
+    host: 192.168.190.128
     port: 6379
     database: 10
 
